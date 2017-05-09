@@ -1,0 +1,14 @@
+[DEFAULT]
+Prefixpath=~/WinePrefixes
+Options=
+
+[SuperGame]
+Prefix=SuperGame
+Gamepath=drive_c/SuperGame
+Exe=SuperGame.exe
+
+[TerribleGame]
+Prefix=TerribleGame
+Gamepath=drive_c/Program Files (x86)/Terrible Game
+Exe=Terrible Game.exe
+Options=--be-better --use-sheep

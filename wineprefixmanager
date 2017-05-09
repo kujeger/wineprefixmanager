@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+import configparser
+import argparse
+import os
+import subprocess
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+            'command',
+            help='Command to perform',
+            choices=[
+                'list', 'show', 'start', 'stop', 'config'
+                ])
+    parser.add_argument(
+            'wineapp',
+            help='Application to act on',
+            nargs='?')
+    parser.add_argument(
+            '-c',
+            '--config',
+            default="{}/wineprefixmanager.ini".format(
+                os.environ.get(
+                    'XDG_CONFIG_HOME',
+                    "{}/.config".format(os.environ.get('HOME'))
+                    )
+                ),
+            help='ini-style config file with game settings')
+    args = parser.parse_args()
+
+    config = configparser.ConfigParser()
+    config.read(args.config)
+
+    if args.command == 'list':
+        for section in config.sections():
+            print(section)
+        exit()
+    elif not args.wineapp:
+        parser.error("app not specified")
+    elif not config.has_section(args.wineapp):
+        parser.error("{} not found in config".format(args.wineapp))
+
+    appconf = config[args.wineapp]
+    appdir = os.path.join(
+            os.path.expanduser(appconf['prefixpath']),
+            appconf['prefix'],
+            )
+    appenv = os.environ.copy()
+    appenv['WINEPREFIX'] = appdir
+    appcwd = os.path.join(
+            appdir,
+            appconf['exepath']
+            )
+
+    if args.command == 'show':
+        for k, v in config.items(args.wineapp):
+            print("{}={}".format(k, v))
+
+    if args.command == 'start':
+        cmd = [
+                'wine',
+                appconf['exe'],
+                ]
+        cmd.append(appconf.get('options', ''))
+        subprocess.run(cmd, cwd=appcwd, env=appenv)
+        exit()
+    if args.command == 'stop':
+        cmd = [
+                'wineserver',
+                '--kill',
+                ]
+        subprocess.run(cmd, cwd=appcwd, env=appenv)
+        exit()
+    if args.command == 'config':
+        cmd = [
+                'winecfg',
+                ]
+        subprocess.run(cmd, cwd=appcwd, env=appenv)
+        exit()
+
+
+if __name__ == '__main__':
+    main()
