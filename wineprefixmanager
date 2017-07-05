@@ -49,6 +49,7 @@ def main():
             )
     appenv = os.environ.copy()
     appenv['WINEPREFIX'] = appdir
+    appenv['WINEDEBUG'] = '-all'
     appcwd = os.path.join(
             appdir,
             appconf['exepath']
