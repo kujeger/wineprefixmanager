@@ -1,0 +1,23 @@
+_wineprefixmanager() 
+{ 
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="--help --configfile list show start stop config"
+
+    case "${prev}" in
+        show|start|stop|config)
+            local list=$(wineprefixmanager list)
+            COMPREPLY=( $(compgen -W "${list}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+
+
+    COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    return 0
+}
+complete -F _wineprefixmanager wineprefixmanager
