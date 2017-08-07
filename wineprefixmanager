@@ -20,7 +20,7 @@ def main():
             nargs='?')
     parser.add_argument(
             '-c',
-            '--config',
+            '--configfile',
             default="{}/wineprefixmanager.ini".format(
                 os.environ.get(
                     'XDG_CONFIG_HOME',
@@ -31,7 +31,7 @@ def main():
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read(args.config)
+    config.read(args.configfile)
 
     if args.command == 'list':
         for section in config.sections():
